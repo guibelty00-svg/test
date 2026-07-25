@@ -129,28 +129,28 @@ export const adminClient = String.raw`
 
   async function act(action, id, featured) {
     if (action === 'delete' && !confirm('Supprimer définitivement ce contenu ?')) return;
-    const url = '/api/admin/media/' + encodeURIComponent(id);
-    const options = { headers: authHeaders() };
-    if (action === 'delete') {
-      options.method = 'DELETE';
-    } else {
-      options.method = 'PATCH';
-      options.body = JSON.stringify(
-        action === 'approve' ? { status: 'approved' } :
-        action === 'reject' ? { status: 'rejected' } :
-        { featured: featured !== 'true' }
-      );
-    }
     q('#message').textContent = 'Mise à jour…';
-    const response = await fetch(url, options);
-    if (!response.ok) {
+    try {
+      const payload = { action };
+      if (action === 'feature') payload.featured = featured !== 'true';
+      const response = await fetch('/api/admin/media/' + encodeURIComponent(id) + '/action', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify(payload),
+        cache: 'no-store'
+      });
       const data = await response.json().catch(() => ({}));
+      if (response.status === 401) {
+        logout('Session expirée ou mot de passe incorrect.');
+        return;
+      }
+      if (!response.ok) throw new Error(data.error || ('Action impossible (' + response.status + ')'));
       q('#message').textContent = '';
-      alert(data.error || ('Action impossible (' + response.status + ')'));
-      return;
+      await load();
+    } catch (error) {
+      q('#message').textContent = '';
+      alert(error.message || 'Action impossible.');
     }
-    q('#message').textContent = '';
-    await load();
   }
 
   document.addEventListener('DOMContentLoaded', () => {

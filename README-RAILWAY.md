@@ -26,3 +26,7 @@ La réponse attendue est `{ "ok": true }`.
 
 ## Correction actions admin
 Cette version corrige les requêtes PATCH pour Accepter, Refuser et Mettre en avant.
+
+
+## Correctif actions admin V3
+Les actions du tableau de bord utilisent désormais POST /api/admin/media/:id/action au lieu de PATCH.
