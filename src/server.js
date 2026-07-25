@@ -4,7 +4,7 @@ const origins=(process.env.ALLOWED_ORIGINS||'').split(',').map(x=>x.trim()).filt
 // Railway est placé derrière un proxy inverse. Cette option permet à Express
 // et express-rate-limit d'utiliser correctement l'adresse IP du visiteur.
 app.set('trust proxy', 1);
-app.use(helmet({crossOriginResourcePolicy:{policy:'cross-origin'}}));app.use(cors({origin:(o,cb)=>!o||!origins.length||origins.includes(o)?cb(null,true):cb(new Error('Origin refusée'))}));app.use(express.json());app.use(rateLimit({windowMs:15*60*1000,limit:120}));
+app.use(helmet({contentSecurityPolicy:false,crossOriginResourcePolicy:{policy:'cross-origin'}}));app.use(cors({origin:(o,cb)=>!o||!origins.length||origins.includes(o)?cb(null,true):cb(new Error('Origin refusée'))}));app.use(express.json());app.use(rateLimit({windowMs:15*60*1000,limit:120}));
 const uploadDir=path.resolve('data/uploads'),publicDir=path.resolve('data/public');await fs.mkdir(uploadDir,{recursive:true});await fs.mkdir(publicDir,{recursive:true});
 app.use('/media',express.static(publicDir,{maxAge:'7d'}));
 const max=Number(process.env.MAX_UPLOAD_MB||100)*1024*1024;const upload=multer({dest:uploadDir,limits:{fileSize:max},fileFilter:(req,file,cb)=>cb(null,['image/jpeg','image/png','image/webp','video/mp4','video/quicktime'].includes(file.mimetype))});
