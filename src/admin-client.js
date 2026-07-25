@@ -141,12 +141,15 @@ export const adminClient = String.raw`
         { featured: featured !== 'true' }
       );
     }
+    q('#message').textContent = 'Mise à jour…';
     const response = await fetch(url, options);
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));
-      alert(data.error || 'Action impossible');
+      q('#message').textContent = '';
+      alert(data.error || ('Action impossible (' + response.status + ')'));
       return;
     }
+    q('#message').textContent = '';
     await load();
   }
 

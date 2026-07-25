@@ -22,3 +22,7 @@ Ne définissez pas `PORT` manuellement : Railway le fournit automatiquement.
 
 Test : ouvrez `https://votre-domaine.up.railway.app/health`.
 La réponse attendue est `{ "ok": true }`.
+
+
+## Correction actions admin
+Cette version corrige les requêtes PATCH pour Accepter, Refuser et Mettre en avant.
