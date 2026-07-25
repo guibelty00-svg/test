@@ -1,6 +1,10 @@
 import 'dotenv/config';import express from 'express';import cors from 'cors';import helmet from 'helmet';import rateLimit from 'express-rate-limit';import multer from 'multer';import path from 'node:path';import fs from 'node:fs/promises';import {v4 as uuid} from 'uuid';import {list,add,update} from './store.js';import {moderateImage,moderateVideo} from './moderation.js';
 const app=express(),port=Number(process.env.PORT||3000),base=(process.env.PUBLIC_BASE_URL||`http://localhost:${port}`).replace(/\/$/,'');
-const origins=(process.env.ALLOWED_ORIGINS||'').split(',').map(x=>x.trim()).filter(Boolean);app.use(helmet({crossOriginResourcePolicy:{policy:'cross-origin'}}));app.use(cors({origin:(o,cb)=>!o||!origins.length||origins.includes(o)?cb(null,true):cb(new Error('Origin refusée'))}));app.use(express.json());app.use(rateLimit({windowMs:15*60*1000,limit:120}));
+const origins=(process.env.ALLOWED_ORIGINS||'').split(',').map(x=>x.trim()).filter(Boolean);
+// Railway est placé derrière un proxy inverse. Cette option permet à Express
+// et express-rate-limit d'utiliser correctement l'adresse IP du visiteur.
+app.set('trust proxy', 1);
+app.use(helmet({crossOriginResourcePolicy:{policy:'cross-origin'}}));app.use(cors({origin:(o,cb)=>!o||!origins.length||origins.includes(o)?cb(null,true):cb(new Error('Origin refusée'))}));app.use(express.json());app.use(rateLimit({windowMs:15*60*1000,limit:120}));
 const uploadDir=path.resolve('data/uploads'),publicDir=path.resolve('data/public');await fs.mkdir(uploadDir,{recursive:true});await fs.mkdir(publicDir,{recursive:true});
 app.use('/media',express.static(publicDir,{maxAge:'7d'}));
 const max=Number(process.env.MAX_UPLOAD_MB||100)*1024*1024;const upload=multer({dest:uploadDir,limits:{fileSize:max},fileFilter:(req,file,cb)=>cb(null,['image/jpeg','image/png','image/webp','video/mp4','video/quicktime'].includes(file.mimetype))});
@@ -11,4 +15,4 @@ function admin(req,res,next){if(!process.env.ADMIN_TOKEN||req.headers.authorizat
 app.get('/api/admin/media',admin,async(req,res)=>res.json({items:await list(req.query.status)}));
 app.patch('/api/admin/media/:id',admin,async(req,res)=>{const allowed={};for(const k of ['status','featured','caption','author'])if(k in req.body)allowed[k]=req.body[k];const item=await update(req.params.id,allowed);item?res.json(item):res.status(404).json({error:'Introuvable'})});
 app.use((err,req,res,next)=>{console.error(err);res.status(err.code==='LIMIT_FILE_SIZE'?413:400).json({error:err.code==='LIMIT_FILE_SIZE'?'Fichier trop volumineux':'Requête invalide'})});
-app.listen(port,()=>console.log(`Rasso.69 Media Hub : ${base}`));
+app.listen(port,'0.0.0.0',()=>console.log(`Rasso.69 Media Hub : ${base}`));
