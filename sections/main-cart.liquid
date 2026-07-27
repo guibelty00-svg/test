@@ -1,0 +1,45 @@
+<section class="r69-cart-page">
+  <div class="r69-cart-heading">
+    <p>RASSO.69 SHOP</p>
+    <h1>Ton panier</h1>
+  </div>
+
+  {% if cart.item_count == 0 %}
+    <div class="r69-cart-empty">
+      <h2>Ton panier est vide.</h2>
+      <p>Retrouve le T-shirt officiel de l’événement et les prochaines éditions Rasso.69.</p>
+      <a class="r69-btn primary" href="/">Retour à l’événement</a>
+    </div>
+  {% else %}
+    <form action="{{ routes.cart_url }}" method="post" class="r69-cart-form">
+      <div class="r69-cart-items">
+        {% for item in cart.items %}
+          <article class="r69-cart-item">
+            <a href="{{ item.url }}" class="r69-cart-image">
+              {% if item.image %}{{ item.image | image_url: width: 360 | image_tag: loading: 'lazy', alt: item.product.title }}{% endif %}
+            </a>
+            <div class="r69-cart-copy">
+              <a href="{{ item.url }}"><h2>{{ item.product.title }}</h2></a>
+              {% unless item.product.has_only_default_variant %}<p>{{ item.variant.title }}</p>{% endunless %}
+              <strong>{{ item.final_price | money }}</strong>
+              <label for="Updates_{{ item.key }}">Quantité</label>
+              <input id="Updates_{{ item.key }}" type="number" name="updates[]" value="{{ item.quantity }}" min="0">
+              <a href="{{ item.url_to_remove }}" class="r69-remove">Supprimer</a>
+            </div>
+            <strong class="r69-cart-line-price">{{ item.final_line_price | money }}</strong>
+          </article>
+        {% endfor %}
+      </div>
+
+      <aside class="r69-cart-summary">
+        <span>Sous-total</span>
+        <strong>{{ cart.total_price | money }}</strong>
+        <p>Les frais de livraison et taxes éventuelles sont calculés à l’étape suivante.</p>
+        <button class="r69-btn" type="submit" name="update">Mettre à jour</button>
+        <button class="r69-btn primary" type="submit" name="checkout">Passer au paiement</button>
+      </aside>
+    </form>
+  {% endif %}
+</section>
+
+{% schema %}{"name":"Panier Rasso.69","settings":[]}{% endschema %}

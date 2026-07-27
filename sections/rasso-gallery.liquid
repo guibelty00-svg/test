@@ -1,0 +1,24 @@
+<section class="r69-gallery-head"><p>ARCHIVES COMMUNAUTAIRES</p><h1>Vos images.<br><em>Notre événement.</em></h1><div class="r69-live-stats" data-live-stats><span><b data-stat-members>—</b> ADV MEMBER</span><span><b data-stat-media>—</b> MÉDIAS</span><span><b data-stat-votes>—</b> VOTES</span></div><div class="r69-filter"><button class="active" data-filter="all">Tout</button><button data-filter="image">Photos</button><button data-filter="video">Vidéos</button><button data-filter="featured">Sélection Rasso.69</button></div></section>
+<section class="r69-social-layout">
+  <div class="r69-gallery" id="gallery" aria-live="polite"><div class="r69-loader">Chargement de la galerie…</div></div>
+  <aside class="r69-vote-panel">
+    <span>VOTE EN DIRECT</span><h2>Voiture du public</h2><p>Choisis ton projet préféré. Un vote par navigateur, modifiable à tout moment.</p>
+    <div class="r69-ranking" data-ranking><div class="r69-loader">Chargement du classement…</div></div>
+  </aside>
+</section>
+<section class="r69-upload" id="publier">
+  <div class="r69-upload-copy"><span>PARTICIPE À L'HISTOIRE</span><h2>Publie ton meilleur moment.</h2><p>Formats acceptés : JPG, PNG, WEBP, MP4 et MOV. En envoyant un contenu, tu confirmes en être l’auteur et autorises Rasso.69 à l’afficher sur ce site et ses réseaux.</p></div>
+  <form id="r69-upload-form" enctype="multipart/form-data">
+    <label class="r69-drop"><input type="file" name="media" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime" required><strong>Dépose une photo ou vidéo</strong><span>ou touche ici pour choisir</span><small>Maximum 100 Mo</small></label>
+    <div class="r69-fields">
+      <label>Pseudo Instagram<input type="text" name="author" placeholder="@tonpseudo" maxlength="60" required></label>
+      <label>Véhicule / projet<input type="text" name="vehicle" placeholder="Ex. BMW M3 F80 — 520 ch" maxlength="80"></label>
+      <label>Catégorie<select name="category"><option>German</option><option>JDM</option><option>Supercar</option><option>Old School</option><option>Statique</option><option>Convoi</option><option>Ambiance</option><option>Backstage</option><option>Autre</option></select></label>
+      <label>Légende<textarea name="caption" placeholder="Raconte ce moment…" maxlength="300"></textarea></label>
+      <label class="r69-check"><input type="checkbox" name="consent" required><span>J’accepte les conditions de publication et la modération automatique.</span></label>
+    </div>
+    <button class="r69-btn primary" type="submit">Envoyer pour validation</button><p class="r69-form-status" role="status"></p>
+  </form>
+</section>
+<div class="r69-lightbox" hidden><button aria-label="Fermer">×</button><div></div></div>
+{% schema %}{"name":"Galerie communautaire","settings":[],"presets":[{"name":"Galerie communautaire"}]}{% endschema %}

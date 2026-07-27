@@ -1,0 +1,124 @@
+<section class="r69-arcade-page" data-r69-arcade>
+  <div class="r69-game-intro">
+    <p class="r69-kicker">RASSO.69 ARCADE</p>
+    <h1>ADV GARAGE GAMES</h1>
+    <p>Choisis ton défi, bats ton record et reviens tenter une meilleure performance. Tous les jeux sont jouables sur mobile et ordinateur.</p>
+  </div>
+
+  <div class="r69-arcade-picker" role="tablist" aria-label="Sélection des mini-jeux">
+    <button class="is-active" type="button" data-arcade-tab="street"><span>01</span><strong>Street Run</strong><small>Évite les obstacles</small></button>
+    <button type="button" data-arcade-tab="launch"><span>02</span><strong>Launch Control</strong><small>Teste tes réflexes</small></button>
+    <button type="button" data-arcade-tab="drift"><span>03</span><strong>ADV Circuit</strong><small>Prends les virages</small></button>
+    <button type="button" data-arcade-tab="pit"><span>04</span><strong>Pit Stop</strong><small>Démonte la roue</small></button>
+    <button type="button" data-arcade-tab="memory"><span>05</span><strong>Garage Memory</strong><small>Retrouve les paires</small></button>
+  </div>
+
+  <div class="r69-arcade-panels">
+    <article class="r69-arcade-panel is-active" data-arcade-panel="street">
+      <div class="r69-game-shell" data-game-street>
+        <div class="r69-game-topbar">
+          <div><span>Score</span><strong data-street-score>0</strong></div>
+          <div><span>Record</span><strong data-street-best>0</strong></div>
+          <div><span>Vitesse</span><strong data-street-speed>1.0x</strong></div>
+        </div>
+        <div class="r69-game-stage">
+          <canvas width="420" height="680" data-street-canvas aria-label="Jeu Street Run"></canvas>
+          <div class="r69-game-overlay" data-street-overlay>
+            <p class="r69-kicker">STREET RUN</p><h2 data-street-title>Prêt à rouler ?</h2>
+            <p data-street-message>Évite les véhicules et récupère les badges ADV.</p>
+            <button type="button" class="r69-game-start" data-street-start>Démarrer</button>
+          </div>
+        </div>
+        <div class="r69-game-controls"><button type="button" data-street-left>←</button><button type="button" data-street-boost>BOOST</button><button type="button" data-street-right>→</button></div>
+      </div>
+    </article>
+
+    <article class="r69-arcade-panel" data-arcade-panel="launch">
+      <div class="r69-mini-shell" data-game-launch>
+        <div class="r69-mini-head"><div><span>Meilleur temps</span><strong data-launch-best>—</strong></div><div><span>Dernier temps</span><strong data-launch-last>—</strong></div></div>
+        <div class="r69-launch-stage">
+          <div class="r69-start-lights" aria-label="Feux de départ"><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="r69-launch-car">ADV<br><small>LAUNCH</small></div>
+          <p data-launch-message>Appuie sur « Armer le départ », puis attends le feu vert.</p>
+        </div>
+        <div class="r69-mini-actions"><button type="button" data-launch-arm>Armer le départ</button><button type="button" class="r69-hot" data-launch-go disabled>LAUNCH</button></div>
+      </div>
+    </article>
+
+    <article class="r69-arcade-panel" data-arcade-panel="drift">
+      <div class="r69-mini-shell" data-game-drift>
+        <div class="r69-mini-head r69-drift-hud">
+          <div><span>Score</span><strong data-drift-score>0</strong></div>
+          <div><span>Vies</span><strong data-drift-combo>3 VIES</strong></div>
+          <div><span>Vitesse</span><strong data-drift-speed>LENT</strong></div>
+          <div><span>Temps</span><strong data-drift-time>45.0</strong></div>
+        </div>
+        <div class="r69-drift-game-stage">
+          <canvas width="760" height="500" data-drift-canvas aria-label="Jeu ADV Drift Circuit"></canvas>
+          <div class="r69-drift-overlay" data-drift-overlay>
+            <p class="r69-kicker">ADV CIRCUIT</p>
+            <h2 data-drift-title>Pilote proprement sur le circuit</h2>
+            <p data-drift-message>La voiture avance doucement toute seule. Utilise gauche et droite pour suivre les virages, rester sur la piste et parcourir la plus grande distance possible.</p>
+            <button type="button" class="r69-game-start" data-drift-start>Démarrer la course</button>
+          </div>
+        </div>
+        <div class="r69-drift-controls r69-drift-controls-simple">
+          <button type="button" data-drift-left aria-label="Braquer à gauche">← GAUCHE</button>
+          <button type="button" class="r69-hot" data-drift-right aria-label="Braquer à droite">DROITE →</button>
+        </div>
+        <div class="r69-drift-status"><span>Record : <b data-drift-best>0</b></span><span data-drift-angle>PRÊT</span><span data-drift-chain>Distance : 0 m</span></div>
+      </div>
+    </article>
+
+    <article class="r69-arcade-panel" data-arcade-panel="pit">
+      <div class="r69-mini-shell" data-game-pit>
+        <div class="r69-mini-head"><div><span>Temps</span><strong data-pit-time>0.00</strong></div><div><span>Record</span><strong data-pit-best>—</strong></div></div>
+        <div class="r69-pit-stage">
+          <div class="r69-wheel"><span class="r69-hub">ADV</span><button type="button" data-nut="0">●</button><button type="button" data-nut="1">●</button><button type="button" data-nut="2">●</button><button type="button" data-nut="3">●</button><button type="button" data-nut="4">●</button></div>
+          <p data-pit-message>Tape les 5 écrous le plus vite possible.</p>
+        </div>
+        <div class="r69-mini-actions"><button type="button" class="r69-hot" data-pit-start>Démarrer le chrono</button></div>
+      </div>
+    </article>
+
+    <article class="r69-arcade-panel" data-arcade-panel="memory">
+      <div class="r69-mini-shell" data-game-memory>
+        <div class="r69-mini-head"><div><span>Coups</span><strong data-memory-moves>0</strong></div><div><span>Record</span><strong data-memory-best>—</strong></div></div>
+        <div class="r69-memory-grid" data-memory-grid></div>
+        <p class="r69-memory-message" data-memory-message>Retrouve les quatre paires du garage.</p>
+        <div class="r69-mini-actions"><button type="button" class="r69-hot" data-memory-start>Nouvelle partie</button></div>
+      </div>
+    </article>
+  </div>
+
+
+  <section class="r69-game-leaderboards" data-game-leaderboards>
+    <div class="r69-leaderboard-head">
+      <div>
+        <p class="r69-kicker">TOP PILOTES</p>
+        <h2>LES 3 PREMIERS DE CHAQUE JEU</h2>
+        <p>Entre ton pseudo puis réalise ton meilleur score. Un seul record par joueur et par jeu est conservé.</p>
+      </div>
+      <label class="r69-player-field">
+        <span>Ton pseudo</span>
+        <input type="text" maxlength="30" autocomplete="nickname" placeholder="Ex. pilote69" data-player-name>
+        <small data-player-status>Le pseudo reste mémorisé sur ton appareil.</small>
+      </label>
+    </div>
+    <div class="r69-leaderboard-grid">
+      <article data-board="street"><h3>Street Run</h3><div class="r69-top3-list" data-board-list>Chargement…</div></article>
+      <article data-board="launch"><h3>Launch Control</h3><div class="r69-top3-list" data-board-list>Chargement…</div></article>
+      <article data-board="drift"><h3>ADV Circuit</h3><div class="r69-top3-list" data-board-list>Chargement…</div></article>
+      <article data-board="pit"><h3>Pit Stop</h3><div class="r69-top3-list" data-board-list>Chargement…</div></article>
+      <article data-board="memory"><h3>Garage Memory</h3><div class="r69-top3-list" data-board-list>Chargement…</div></article>
+    </div>
+  </section>
+
+  <p class="r69-game-note">Ces jeux sont fictifs. Sur route ouverte, respecte toujours le Code de la route et les autres usagers.</p>
+</section>
+
+{{ 'rasso69-game.js' | asset_url | script_tag }}
+
+{% schema %}
+{"name":"Arcade automobile ADV","settings":[]}
+{% endschema %}

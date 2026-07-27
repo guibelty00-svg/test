@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "main": {
+      "type": "rasso-game",
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}

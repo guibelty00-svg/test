@@ -1,0 +1,48 @@
+<header class="r69-header">
+  <a class="r69-brand" href="/" aria-label="Accueil Rasso.69">
+    {% if settings.logo %}
+      <img src="{{ settings.logo | image_url: width: 240 }}" alt="Rasso.69">
+    {% else %}
+      <span>RASSO<span>.69</span></span>
+    {% endif %}
+  </a>
+
+  <div class="r69-header-right">
+    <div class="r69-live-members" data-live-members aria-live="polite">
+      <i></i><strong data-member-count>—</strong><span>ADV MEMBER</span>
+    </div>
+
+    <nav class="r69-desktop-nav" aria-label="Navigation principale">
+      <a href="/">Accueil</a>
+      <a href="/#acces-evenement">Accès</a>
+      <a href="/#regles">Règles</a>
+      <a href="/pages/galerie">Galerie</a>
+      <a href="/pages/mini-jeu">Mini-jeu</a>
+      <a href="{{ routes.cart_url }}">Panier{% if cart.item_count > 0 %} ({{ cart.item_count }}){% endif %}</a>
+      <a class="r69-pill" href="/pages/galerie#publier">Publier</a>
+    </nav>
+
+    <button class="r69-menu-toggle" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="r69-mobile-menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="r69-mobile-menu" id="r69-mobile-menu" hidden>
+  <button class="r69-mobile-menu-close" type="button" aria-label="Fermer le menu">×</button>
+  <div class="r69-mobile-menu-inner">
+    <p class="r69-mobile-menu-kicker">Navigation</p>
+    <nav aria-label="Navigation mobile">
+      <a href="/">Accueil <span>01</span></a>
+      <a href="/#acces-evenement">Accès à l’événement <span>02</span></a>
+      <a href="/#regles">Règles <span>03</span></a>
+      <a href="/pages/galerie">Galerie <span>04</span></a>
+      <a href="/pages/mini-jeu">Mini-jeu <span>05</span></a>
+      <a href="{{ routes.cart_url }}">Panier{% if cart.item_count > 0 %} ({{ cart.item_count }}){% endif %} <span>06</span></a>
+      <a class="r69-mobile-publish" href="/pages/galerie#publier">Publier une photo ou vidéo</a>
+    </nav>
+    <small>RASSO.69 · SPACE MOUNTAIN</small>
+  </div>
+</div>
+
+{% schema %}{"name":"En-tête Rasso.69","settings":[]}{% endschema %}

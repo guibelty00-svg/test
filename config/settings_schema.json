@@ -1,0 +1,24 @@
+[
+  {
+    "name": "Rasso.69 Media Hub",
+    "settings": [
+      {
+        "type": "text",
+        "id": "rasso69_api_url",
+        "label": "URL du serveur Media Hub",
+        "default": "https://test-production-0d4e.up.railway.app"
+      },
+      {
+        "type": "text",
+        "id": "instagram_url",
+        "label": "Instagram",
+        "default": "https://instagram.com/rasso.69"
+      },
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo Rasso.69"
+      }
+    ]
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "settings": {
+        "show_dynamic_checkout": true
+      }
+    }
+  },
+  "order": ["main"]
+}

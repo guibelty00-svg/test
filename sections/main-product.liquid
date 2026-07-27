@@ -1,0 +1,121 @@
+{% liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign product_form_id = 'product-form-' | append: section.id
+%}
+
+<section class="r69-product-page" data-product-section>
+  <div class="r69-product-gallery">
+    {% if product.media.size > 0 %}
+      <div class="r69-product-main-media" data-main-media>
+        {% assign featured_media = current_variant.featured_media | default: product.featured_media %}
+        {% if featured_media.media_type == 'video' or featured_media.media_type == 'external_video' %}
+          {{ featured_media | media_tag: controls: true, image_size: '1200x' }}
+        {% elsif featured_media != blank %}
+          {{ featured_media | image_url: width: 1400 | image_tag: loading: 'eager', widths: '480,720,960,1200,1400', alt: featured_media.alt | default: product.title }}
+        {% endif %}
+      </div>
+      {% if product.media.size > 1 %}
+        <div class="r69-product-thumbs" aria-label="Autres vues du produit">
+          {% for media in product.media %}
+            <button type="button" class="r69-product-thumb{% if media.id == featured_media.id %} active{% endif %}" data-media-id="{{ media.id }}" aria-label="Afficher la vue {{ forloop.index }}">
+              {{ media.preview_image | image_url: width: 180 | image_tag: loading: 'lazy', alt: media.alt | default: product.title }}
+            </button>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="r69-product-main-media r69-product-empty">Aucune image produit</div>
+    {% endif %}
+  </div>
+
+  <div class="r69-product-details">
+    <p class="r69-product-eyebrow">RASSO.69 · ÉDITION ÉVÉNEMENT</p>
+    <h1>{{ product.title }}</h1>
+
+    <div class="r69-product-price" data-product-price>
+      {% if current_variant.compare_at_price > current_variant.price %}
+        <s>{{ current_variant.compare_at_price | money }}</s>
+      {% endif %}
+      <strong>{{ current_variant.price | money }}</strong>
+    </div>
+
+    {% if product.description != blank %}
+      <div class="r69-product-description rte">{{ product.description }}</div>
+    {% endif %}
+
+    {% form 'product', product, id: product_form_id, class: 'r69-product-form', data-product-form: '' %}
+      {% unless product.has_only_default_variant %}
+        {% for option in product.options_with_values %}
+          <fieldset class="r69-product-option">
+            <legend>{{ option.name }}</legend>
+            <div class="r69-option-values">
+              {% for value in option.values %}
+                {% assign input_id = section.id | append: '-' | append: option.position | append: '-' | append: forloop.index0 %}
+                <input type="radio" id="{{ input_id }}" name="options[{{ option.name | escape }}]" value="{{ value | escape }}" {% if option.selected_value == value %}checked{% endif %}>
+                <label for="{{ input_id }}">{{ value }}</label>
+              {% endfor %}
+            </div>
+          </fieldset>
+        {% endfor %}
+      {% endunless %}
+
+      <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id>
+
+      <div class="r69-quantity-row">
+        <label for="Quantity-{{ section.id }}">Quantité</label>
+        <div class="r69-quantity">
+          <button type="button" data-qty-minus aria-label="Diminuer la quantité">−</button>
+          <input id="Quantity-{{ section.id }}" type="number" name="quantity" min="1" value="1" inputmode="numeric">
+          <button type="button" data-qty-plus aria-label="Augmenter la quantité">+</button>
+        </div>
+      </div>
+
+      <button type="submit" name="add" class="r69-btn primary r69-add-cart" data-add-to-cart {% unless current_variant.available %}disabled{% endunless %}>
+        <span data-add-label>{% if current_variant.available %}Ajouter au panier{% else %}Indisponible{% endif %}</span>
+      </button>
+
+      {% if section.settings.show_dynamic_checkout %}
+        <div class="r69-dynamic-checkout">{{ form | payment_button }}</div>
+      {% endif %}
+
+      <p class="r69-product-status" data-product-status aria-live="polite"></p>
+    {% endform %}
+
+    <div class="r69-product-reassurance">
+      <article><strong>Édition événement</strong><span>Créée pour Rasso X Space Mountain</span></article>
+      <article><strong>Paiement sécurisé</strong><span>Transaction traitée par Shopify</span></article>
+      <article><strong>Stock limité</strong><span>Disponibilité selon les tailles</span></article>
+    </div>
+  </div>
+
+  <script type="application/json" data-product-json>
+    {{ product.variants | json }}
+  </script>
+  <script type="application/json" data-media-json>
+    [
+      {% for media in product.media %}
+        {
+          "id": {{ media.id | json }},
+          "type": {{ media.media_type | json }},
+          "alt": {{ media.alt | default: product.title | json }},
+          "preview": {{ media.preview_image | image_url: width: 1400 | json }}
+          {% if media.media_type == 'video' %},"sources": {{ media.sources | json }}{% endif %}
+        }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    ]
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "Produit Rasso.69",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_dynamic_checkout",
+      "label": "Afficher le bouton d’achat immédiat",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,135 @@
+
+<section class="r69-hero">
+  <div class="r69-grid"></div><div class="r69-orbit"></div>
+  <div class="r69-hero-content">
+    <p class="r69-kicker">15 AOÛT · EXPÉRIENCE AUTOMOBILE</p>
+    <h1>RASSO X<br><em>SPACE MOUNTAIN</em></h1>
+    <p class="r69-lead">Un événement. Des centaines de regards. Une seule galerie créée par la communauté.</p>
+    <div class="r69-actions"><a class="r69-btn primary" href="/pages/galerie#publier">Partager mon contenu</a><a class="r69-btn" href="/pages/galerie">Explorer la galerie</a></div>
+  </div>
+  <div class="r69-countdown" data-date="{{ section.settings.event_date }}"><span>Prochain décollage</span><strong data-countdown>CHARGEMENT…</strong></div>
+</section>
+{% assign featured_product = section.settings.featured_product %}
+<section class="r69-product-launch" id="tshirt-officiel">
+  <div class="r69-product-visual">
+    {% if section.settings.product_image != blank %}
+      <img src="{{ section.settings.product_image | image_url: width: 900 }}" alt="{{ section.settings.product_title | default: featured_product.title | escape }}" loading="eager">
+    {% elsif featured_product != blank and featured_product.featured_image != blank %}
+      <img src="{{ featured_product.featured_image | image_url: width: 900 }}" alt="{{ featured_product.title | escape }}" loading="eager">
+    {% else %}
+      <div class="r69-shirt-placeholder" aria-label="T-shirt officiel Rasso X Space Mountain">
+        <span>RASSO<span>.69</span></span>
+        <small>SPACE MOUNTAIN</small>
+      </div>
+    {% endif %}
+  </div>
+  <div class="r69-product-copy">
+    <span class="r69-product-kicker">T-SHIRT OFFICIEL · ÉDITION ÉVÉNEMENT</span>
+    <h2>{% if section.settings.product_title != blank %}{{ section.settings.product_title }}{% elsif featured_product != blank %}{{ featured_product.title }}{% else %}T-shirt officiel Rasso X Space Mountain{% endif %}</h2>
+    <p>{% if section.settings.product_description != blank %}{{ section.settings.product_description }}{% elsif featured_product != blank %}{{ featured_product.description | strip_html | truncate: 220 }}{% endif %}</p>
+    <div class="r69-product-buy">
+      <strong>{% if featured_product != blank %}{{ featured_product.price | money }}{% else %}{{ section.settings.product_price }}{% endif %}</strong>
+      {% if featured_product != blank %}
+        <a class="r69-btn primary" href="{{ featured_product.url }}">ACHETER LE T-SHIRT</a>
+      {% elsif section.settings.product_url != blank %}
+        <a class="r69-btn primary" href="{{ section.settings.product_url }}">ACHETER LE T-SHIRT</a>
+      {% else %}
+        <span class="r69-btn primary is-disabled">PRODUIT À SÉLECTIONNER</span>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% assign japan_product = section.settings.japan_product %}
+<section class="r69-product-launch r69-product-launch--japan" id="tshirt-japan-design">
+  <div class="r69-product-visual">
+    {% if section.settings.japan_product_image != blank %}
+      <img src="{{ section.settings.japan_product_image | image_url: width: 900 }}" alt="{{ section.settings.japan_product_title | default: japan_product.title | escape }}" loading="lazy">
+    {% elsif japan_product != blank and japan_product.featured_image != blank %}
+      <img src="{{ japan_product.featured_image | image_url: width: 900 }}" alt="{{ japan_product.title | escape }}" loading="lazy">
+    {% else %}
+      <div class="r69-shirt-placeholder r69-shirt-placeholder--japan" aria-label="T-shirt Japan Design édition limitée">
+        <span>JAPAN</span>
+        <small>LIMITED DESIGN</small>
+      </div>
+    {% endif %}
+  </div>
+  <div class="r69-product-copy">
+    <span class="r69-product-kicker">JAPAN DESIGN · ÉDITION LIMITÉE</span>
+    <h2>{% if section.settings.japan_product_title != blank %}{{ section.settings.japan_product_title }}{% elsif japan_product != blank %}{{ japan_product.title }}{% else %}T-shirt Japan Design{% endif %}</h2>
+    <p>{% if section.settings.japan_product_description != blank %}{{ section.settings.japan_product_description }}{% elsif japan_product != blank %}{{ japan_product.description | strip_html | truncate: 220 }}{% endif %}</p>
+    <div class="r69-limited-stock"><i></i><span>ÉDITION LIMITÉE · DISPONIBLE JUSQU'À ÉPUISEMENT</span></div>
+    <div class="r69-product-buy">
+      <strong>{% if japan_product != blank %}{{ japan_product.price | money }}{% else %}{{ section.settings.japan_product_price }}{% endif %}</strong>
+      {% if japan_product != blank %}
+        <a class="r69-btn primary" href="{{ japan_product.url }}">ACHETER JAPAN DESIGN</a>
+      {% elsif section.settings.japan_product_url != blank %}
+        <a class="r69-btn primary" href="{{ section.settings.japan_product_url }}">ACHETER JAPAN DESIGN</a>
+      {% else %}
+        <span class="r69-btn primary is-disabled">PRODUIT À SÉLECTIONNER</span>
+      {% endif %}
+    </div>
+  </div>
+</section>
+<section class="r69-live-hub">
+  <div class="r69-live-title"><span><i></i> ACTIVITÉ EN DIRECT</span><h2>Le rasso vit<br>avec vous.</h2></div>
+  <div class="r69-activity-feed" data-activity-feed aria-live="polite"><div class="r69-loader">Connexion au flux communautaire…</div></div>
+  <div class="r69-hub-stats" data-live-stats><article><b data-stat-members>—</b><span>ADV MEMBER</span></article><article><b data-stat-media>—</b><span>MÉDIAS PUBLIÉS</span></article><article><b data-stat-votes>—</b><span>VOTES DU PUBLIC</span></article></div>
+</section>
+<section class="r69-manifesto"><p>PHOTOS</p><i></i><p>VIDÉOS</p><i></i><p>COMMUNAUTÉ</p><i></i><p>SOUVENIRS</p></section>
+<section class="r69-intro"><div><span>01 / LE CONCEPT</span><h2>Le public devient<br>le photographe officiel.</h2></div><p>Publiez vos meilleurs clichés et vidéos depuis votre téléphone. Chaque contenu passe par une modération automatique avant d’apparaître dans la galerie publique.</p></section>
+<section class="r69-safety"><article><b>01</b><h3>Analyse anti-nudité</h3><p>Les contenus sensibles sont automatiquement refusés et ne sont jamais affichés.</p></article><article><b>02</b><h3>Protection des plaques</h3><p>Les plaques visibles sont détectées. Sur les photos, elles sont floutées avant publication.</p></article><article><b>03</b><h3>Validation Rasso.69</h3><p>Une file de modération permet à l’équipe de garder le contrôle sur chaque publication.</p></article></section>
+<section class="r69-access" id="acces-evenement">
+  <div class="r69-access-copy">
+    <span>02 / ACCÈS À L’ÉVÉNEMENT</span>
+    <h2>Le point final reste secret.</h2>
+    <p>L’adresse exacte de Rasso X Space Mountain ne sera pas publiée publiquement. L’événement aura lieu dans la région Rhône-Alpes et les informations d’accès seront communiquées progressivement.</p>
+    <div class="r69-access-alert"><i></i><strong>Les convois seront disponibles seulement quelques jours avant l’événement.</strong></div>
+    <a class="r69-btn primary" href="https://www.instagram.com/za3ek_tn/" target="_blank" rel="noopener">Accéder au canal via @za3ek_tn</a>
+  </div>
+  <div class="r69-access-steps">
+    <article><b>01</b><div><h3>Reste connecté</h3><p>Suis le compte Instagram <strong>@za3ek_tn</strong> et ouvre le canal disponible dans sa bio.</p></div></article>
+    <article><b>02</b><div><h3>Reçois ton convoi</h3><p>Les points de départ, horaires et consignes seront diffusés sur le canal quelques jours avant le 15 août.</p></div></article>
+    <article><b>03</b><div><h3>Découvre l’adresse finale</h3><p>Le lieu exact restera confidentiel jusqu’au dernier moment. Seule la région Rhône-Alpes est annoncée à l’avance.</p></div></article>
+  </div>
+</section>
+
+<section class="r69-rules" id="regles">
+  <div class="r69-rules-heading">
+    <span>03 / RÈGLES</span>
+    <h2>Respect. Maîtrise.<br>Sécurité.</h2>
+    <p>Ces consignes s’appliquent à tous les participants. Le respect du public, des lieux et des forces de l’ordre est indispensable au bon déroulement de l’événement.</p>
+  </div>
+  <div class="r69-rules-grid">
+    <article><b>01</b><div><h3>Aucun débordement en convoi</h3><p>Respectez le Code de la route, les autres usagers et les indications données par l’organisation. Aucun comportement dangereux ne sera toléré.</p></div></article>
+    <article><b>02</b><div><h3>Mortiers interdits</h3><p>Les mortiers, artifices explosifs et tout dispositif dangereux sont strictement interdits sur le trajet comme sur le lieu de l’événement.</p></div></article>
+    <article><b>03</b><div><h3>Respect des forces de l’ordre</h3><p>Aucune provocation, menace ou agression envers les forces de l’ordre. Gardez votre calme et suivez les consignes.</p></div></article>
+    <article><b>04</b><div><h3>Mégots totalement éteints</h3><p>Avant de jeter un mégot, assurez-vous qu’il est complètement éteint et déposez-le uniquement dans une poubelle adaptée.</p></div></article>
+    <article><b>05</b><div><h3>Torches autorisées avec prudence</h3><p>Les torches restent autorisées, mais éloignez-les des personnes, véhicules, matières inflammables et végétation sèche afin d’éviter tout départ d’incendie.</p></div></article>
+  </div>
+  <div class="r69-rules-warning"><i></i><strong>Tout participant mettant en danger le public ou l’événement pourra être exclu.</strong></div>
+</section>
+
+
+<section class="r69-cta"><div><small>RASSO X SPACE MOUNTAIN</small><h2>Ton angle.<br>Ton moment.<br>Notre histoire.</h2><a class="r69-btn primary" href="/pages/galerie#publier">Publier maintenant</a></div></section>
+{% schema %}
+{
+  "name": "Accueil Space Mountain",
+  "settings": [
+    {"type":"product","id":"featured_product","label":"Produit Shopify à vendre"},
+    {"type":"image_picker","id":"product_image","label":"Image personnalisée (facultatif)"},
+    {"type":"text","id":"product_title","label":"Nom du produit","default":"T-shirt officiel Rasso X Space Mountain"},
+    {"type":"textarea","id":"product_description","label":"Description courte","default":"Porte les couleurs du dernier événement Rasso.69 avec une édition créée spécialement pour le 15 août."},
+    {"type":"text","id":"product_price","label":"Prix affiché","default":"24,90 €"},
+    {"type":"url","id":"product_url","label":"Lien vers le produit"},
+    {"type":"header","content":"T-shirt Japan Design — édition limitée"},
+    {"type":"product","id":"japan_product","label":"Deuxième produit Shopify"},
+    {"type":"image_picker","id":"japan_product_image","label":"Image Japan Design personnalisée (facultatif)"},
+    {"type":"text","id":"japan_product_title","label":"Nom du Japan Design","default":"T-shirt JAPAN DESIGN — Édition limitée"},
+    {"type":"textarea","id":"japan_product_description","label":"Description Japan Design","default":"Une création automobile inspirée de la culture japonaise, proposée en quantité limitée pour la communauté Rasso.69."},
+    {"type":"text","id":"japan_product_price","label":"Prix Japan Design affiché","default":"24,90 €"},
+    {"type":"url","id":"japan_product_url","label":"Lien Japan Design de secours"},
+    {"type":"text","id":"event_date","label":"Date ISO de l'événement","default":"2026-08-15T18:00:00+02:00"}
+  ],
+  "presets": [{"name":"Accueil Space Mountain"}]
+}
+{% endschema %}
