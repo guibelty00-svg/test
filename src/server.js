@@ -1,4 +1,4 @@
-import 'dotenv/config';import express from 'express';import cors from 'cors';import helmet from 'helmet';import rateLimit from 'express-rate-limit';import multer from 'multer';import path from 'node:path';import fs from 'node:fs/promises';import {v4 as uuid} from 'uuid';import {list,add,update,mutate,remove,addActivity,listActivity} from './store.js';import {moderateImage,moderateVideo} from './moderation.js';import {adminPage} from './admin-page.js';import {adminClient} from './admin-client.js';
+import 'dotenv/config';import express from 'express';import cors from 'cors';import helmet from 'helmet';import rateLimit from 'express-rate-limit';import multer from 'multer';import path from 'node:path';import fs from 'node:fs/promises';import {v4 as uuid} from 'uuid';import {list,add,update,mutate,remove,addActivity,listActivity,submitScore,listScores} from './store.js';import {moderateImage,moderateVideo} from './moderation.js';import {adminPage} from './admin-page.js';import {adminClient} from './admin-client.js';
 const app=express(),port=Number(process.env.PORT||3000),base=(process.env.PUBLIC_BASE_URL||`http://localhost:${port}`).replace(/\/$/,'');
 const origins=(process.env.ALLOWED_ORIGINS||'').split(',').map(x=>x.trim()).filter(Boolean);
 // Railway est placé derrière un proxy inverse. Cette option permet à Express
@@ -69,6 +69,59 @@ app.get('/api/live',async(req,res)=>{
     res.status(500).json({ok:false,error:'Live momentanément indisponible'});
   }
 });
+const SCORE_GAMES = {
+  street:{label:'Street Run',lower:false,unit:'pts'},
+  launch:{label:'Launch Control',lower:true,unit:'ms'},
+  drift:{label:'ADV Circuit',lower:false,unit:'pts'},
+  pit:{label:'Pit Stop',lower:true,unit:'s'},
+  memory:{label:'Garage Memory',lower:true,unit:'coups'}
+};
+function cleanPlayer(value){
+  return String(value||'').trim().replace(/^@+/,'').replace(/[^a-zA-Z0-9._]/g,'').slice(0,30);
+}
+function gameRows(rows,game){
+  const cfg=SCORE_GAMES[game];
+  return rows.filter(x=>x.game===game).sort((a,b)=>cfg.lower?Number(a.score)-Number(b.score):Number(b.score)-Number(a.score));
+}
+function leaderboardPayload(rows,game,limit=10){
+  const safeLimit=Math.max(3,Math.min(50,Number(limit)||10));
+  if(game&&SCORE_GAMES[game]){
+    return gameRows(rows,game).slice(0,safeLimit).map((x,i)=>({...x,rank:i+1,label:SCORE_GAMES[game].label}));
+  }
+  const pointsByPlayer=new Map();
+  for(const key of Object.keys(SCORE_GAMES)){
+    gameRows(rows,key).slice(0,20).forEach((x,i)=>{
+      const points=[100,80,65,55,48,42,36,31,27,24,21,18,16,14,12,10,8,6,4,2][i]||0;
+      const k=x.player.toLowerCase();
+      const current=pointsByPlayer.get(k)||{player:x.player,points:0,games:0,wins:0};
+      current.points+=points;current.games+=1;if(i===0)current.wins+=1;
+      pointsByPlayer.set(k,current);
+    });
+  }
+  return [...pointsByPlayer.values()].sort((a,b)=>b.points-a.points||b.wins-a.wins).slice(0,safeLimit).map((x,i)=>({...x,rank:i+1}));
+}
+app.get('/api/leaderboard',async(req,res)=>{
+  const rows=await listScores();
+  res.set('Cache-Control','no-store');
+  res.json({ok:true,game:req.query.game||'overall',items:leaderboardPayload(rows,String(req.query.game||''),req.query.limit||10)});
+});
+app.post('/api/scores',rateLimit({windowMs:60*1000,limit:20}),async(req,res)=>{
+  try{
+    const player=cleanPlayer(req.body?.player);
+    const game=String(req.body?.game||'');
+    const score=Number(req.body?.score);
+    if(player.length<2)return res.status(400).json({error:'Pseudo Instagram invalide'});
+    if(!SCORE_GAMES[game])return res.status(400).json({error:'Jeu invalide'});
+    if(!Number.isFinite(score)||score<=0||score>1000000)return res.status(400).json({error:'Score invalide'});
+    const result=await submitScore({player,game,score,unit:SCORE_GAMES[game].unit});
+    if(result.improved)await addActivity({type:'score',author:`@${player}`,text:`@${player} vient d’enregistrer un score sur ${SCORE_GAMES[game].label}`});
+    res.status(result.improved?201:200).json({ok:true,improved:result.improved,item:result.item});
+  }catch(error){
+    console.error('SCORE API ERROR',error);
+    res.status(500).json({error:'Impossible d’enregistrer le score'});
+  }
+});
+
 app.get('/api/media',async(req,res)=>{const rows=await list(req.query.status||'approved');res.json({items:rows.map(x=>({...x,url:x.url.startsWith('http')?x.url:base+x.url,thumbnailUrl:x.thumbnailUrl?base+x.thumbnailUrl:null}))})});
 app.post('/api/uploads',rateLimit({windowMs:60*60*1000,limit:12}),upload.single('media'),async(req,res)=>{try{if(!req.file)return res.status(400).json({error:'Fichier manquant'});if(!req.body.consent)return res.status(400).json({error:'Consentement requis'});const id=uuid(),isVideo=req.file.mimetype.startsWith('video/'),ext=isVideo?'.mp4':'.jpg',out=path.join(publicDir,id+ext);let moderation;if(isVideo){await fs.copyFile(req.file.path,out);moderation=await moderateVideo(req.file.path)}else moderation=await moderateImage(req.file.path,out);await fs.unlink(req.file.path).catch(()=>{});const status=moderation.decision==='rejected'?'rejected':'pending';const item=await add({id,type:isVideo?'video':'image',author:String(req.body.author||'').slice(0,60),caption:String(req.body.caption||'').slice(0,300),vehicle:String(req.body.vehicle||'').slice(0,80),category:String(req.body.category||'Autre').slice(0,40),url:'/media/'+id+ext,status,featured:false,likes:0,votes:0,views:0,likedBy:[],votedBy:[],moderation,createdAt:new Date().toISOString()});await addActivity({type:'upload',author:item.author,text:`${item.author||'Un membre'} vient d’envoyer un nouveau média`,mediaId:item.id});if(status==='rejected')return res.status(422).json({error:'Ce contenu ne peut pas être accepté.',id:item.id});res.status(201).json({message:'Contenu reçu. Il sera visible après validation par Rasso.69.',id:item.id,status})}catch(e){console.error(e);res.status(500).json({error:'Erreur pendant le traitement du média'})}});
 
