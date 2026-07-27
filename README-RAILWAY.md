@@ -30,3 +30,11 @@ Cette version corrige les requêtes PATCH pour Accepter, Refuser et Mettre en av
 
 ## Correctif actions admin V3
 Les actions du tableau de bord utilisent désormais POST /api/admin/media/:id/action au lieu de PATCH.
+
+## Compteur ADV MEMBER en direct
+
+Le serveur expose maintenant :
+- `POST /api/presence/heartbeat`
+- `GET /api/presence`
+
+Le thème envoie automatiquement un signal toutes les 15 secondes. Un visiteur est considéré connecté pendant 55 secondes après son dernier signal. Le compteur est conservé en mémoire et convient à un service Railway configuré avec une seule réplique.
