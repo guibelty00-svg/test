@@ -38,3 +38,9 @@ Le serveur expose maintenant :
 - `GET /api/presence`
 
 Le thème envoie automatiquement un signal toutes les 15 secondes. Un visiteur est considéré connecté pendant 55 secondes après son dernier signal. Le compteur est conservé en mémoire et convient à un service Railway configuré avec une seule réplique.
+
+## Nouvelles fonctions interactives
+- `/api/activity` : activité communautaire en direct.
+- `/api/stats` : membres connectés, médias, likes et votes.
+- Likes, vues et vote « voiture du public » sur chaque média approuvé.
+- Le vote est limité à un projet par navigateur et peut être modifié.
