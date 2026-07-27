@@ -4,7 +4,11 @@ const origins=(process.env.ALLOWED_ORIGINS||'').split(',').map(x=>x.trim()).filt
 // Railway est placé derrière un proxy inverse. Cette option permet à Express
 // et express-rate-limit d'utiliser correctement l'adresse IP du visiteur.
 app.set('trust proxy', 1);
-app.use(helmet({contentSecurityPolicy:false,crossOriginResourcePolicy:{policy:'cross-origin'}}));app.use(cors({origin:(o,cb)=>!o||!origins.length||origins.includes(o)?cb(null,true):cb(new Error('Origin refusée')),methods:['GET','POST','PATCH','DELETE','OPTIONS'],allowedHeaders:['Content-Type','Authorization']}));app.options('*',cors());app.use(express.json({limit:'1mb'}));app.use(express.urlencoded({extended:false}));app.use(rateLimit({windowMs:15*60*1000,limit:120}));
+app.use(helmet({contentSecurityPolicy:false,crossOriginResourcePolicy:{policy:'cross-origin'}}));
+// Les pages Shopify peuvent être servies depuis plusieurs domaines (aperçu, myshopify, domaine personnalisé).
+// L’API communautaire est publique ; les actions d’administration restent protégées par ADMIN_TOKEN.
+app.use(cors({origin:true,methods:['GET','POST','PATCH','DELETE','OPTIONS'],allowedHeaders:['Content-Type','Authorization'],credentials:false}));
+app.options('*',cors({origin:true}));app.use(express.json({limit:'1mb'}));app.use(express.urlencoded({extended:false}));app.use(rateLimit({windowMs:15*60*1000,limit:120}));
 const uploadDir=path.resolve('data/uploads'),publicDir=path.resolve('data/public');await fs.mkdir(uploadDir,{recursive:true});await fs.mkdir(publicDir,{recursive:true});
 app.use('/media',express.static(publicDir,{maxAge:'7d'}));
 const max=Number(process.env.MAX_UPLOAD_MB||100)*1024*1024;const upload=multer({dest:uploadDir,limits:{fileSize:max},fileFilter:(req,file,cb)=>cb(null,['image/jpeg','image/png','image/webp','video/mp4','video/quicktime'].includes(file.mimetype))});
@@ -42,6 +46,29 @@ app.get('/api/presence', (req, res) => {
 });
 app.get('/api/activity',async(req,res)=>{res.set('Cache-Control','no-store');res.json({items:await listActivity(req.query.limit||15)})});
 app.get('/api/stats',async(req,res)=>{const rows=await list('approved');res.set('Cache-Control','no-store');res.json({members:presenceCount(),media:rows.length,likes:rows.reduce((a,x)=>a+Number(x.likes||0),0),votes:rows.reduce((a,x)=>a+Number(x.votes||0),0)})});
+// Route unique pour le direct : enregistre le visiteur et renvoie toutes les données en une seule requête.
+app.get('/api/live',async(req,res)=>{
+  try{
+    const visitorId=String(req.query?.id||'').trim().slice(0,100);
+    if(visitorId&&/^[a-zA-Z0-9_-]+$/.test(visitorId)) activeMembers.set(visitorId,Date.now());
+    const rows=await list('approved');
+    const activities=await listActivity(req.query.limit||7);
+    res.set('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+    res.set('Pragma','no-cache');
+    res.json({
+      ok:true,
+      members:Math.max(visitorId?1:0,presenceCount()),
+      media:rows.length,
+      likes:rows.reduce((a,x)=>a+Number(x.likes||0),0),
+      votes:rows.reduce((a,x)=>a+Number(x.votes||0),0),
+      activity:activities,
+      serverTime:new Date().toISOString()
+    });
+  }catch(error){
+    console.error('LIVE API ERROR',error);
+    res.status(500).json({ok:false,error:'Live momentanément indisponible'});
+  }
+});
 app.get('/api/media',async(req,res)=>{const rows=await list(req.query.status||'approved');res.json({items:rows.map(x=>({...x,url:x.url.startsWith('http')?x.url:base+x.url,thumbnailUrl:x.thumbnailUrl?base+x.thumbnailUrl:null}))})});
 app.post('/api/uploads',rateLimit({windowMs:60*60*1000,limit:12}),upload.single('media'),async(req,res)=>{try{if(!req.file)return res.status(400).json({error:'Fichier manquant'});if(!req.body.consent)return res.status(400).json({error:'Consentement requis'});const id=uuid(),isVideo=req.file.mimetype.startsWith('video/'),ext=isVideo?'.mp4':'.jpg',out=path.join(publicDir,id+ext);let moderation;if(isVideo){await fs.copyFile(req.file.path,out);moderation=await moderateVideo(req.file.path)}else moderation=await moderateImage(req.file.path,out);await fs.unlink(req.file.path).catch(()=>{});const status=moderation.decision==='rejected'?'rejected':'pending';const item=await add({id,type:isVideo?'video':'image',author:String(req.body.author||'').slice(0,60),caption:String(req.body.caption||'').slice(0,300),vehicle:String(req.body.vehicle||'').slice(0,80),category:String(req.body.category||'Autre').slice(0,40),url:'/media/'+id+ext,status,featured:false,likes:0,votes:0,views:0,likedBy:[],votedBy:[],moderation,createdAt:new Date().toISOString()});await addActivity({type:'upload',author:item.author,text:`${item.author||'Un membre'} vient d’envoyer un nouveau média`,mediaId:item.id});if(status==='rejected')return res.status(422).json({error:'Ce contenu ne peut pas être accepté.',id:item.id});res.status(201).json({message:'Contenu reçu. Il sera visible après validation par Rasso.69.',id:item.id,status})}catch(e){console.error(e);res.status(500).json({error:'Erreur pendant le traitement du média'})}});
 
